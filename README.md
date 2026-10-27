@@ -54,9 +54,13 @@ A plausible machine-built dashboard, and the same screen after the audit's
 blocker and critical findings were fixed. Both measured in a real browser at
 1440 and 375.
 
-| | |
-|---|---|
-| ![Before](docs/images/audit-before.png) | ![After](docs/images/audit-after.png) |
+![Nothing on the screen said what to do first](docs/images/fig-1-hierarchy.png)
+
+![Run status was a coloured dot and nothing else](docs/images/fig-2-status.png)
+
+![At 375px the page scrolled sideways](docs/images/fig-4-mobile.png)
+
+Every number below was measured in the browser at 1440 and 375.
 
 | | Before | After |
 |---|---|---|
@@ -79,9 +83,7 @@ side by side.
 Same screen, same content, same markup structure. The right column is what
 `references/craft.md` changes.
 
-| Before the craft pass | After |
-|---|---|
-| ![Plain](docs/images/console-before.png) | ![Craft](docs/images/console-after.png) |
+![The craft pass, at the size you would actually see it](docs/images/fig-3-craft.png)
 
 | Before | After | Why |
 |---|---|---|
@@ -94,8 +96,13 @@ Same screen, same content, same markup structure. The right column is what
 
 Hovering a run row marks its line in the band above. It also fires on
 `focusin`, and the link is carried by lift and weight, never by colour alone.
+Look at the third row from the top, and at the second line in the dark band:
 
-![Row and line linked](docs/images/console-row-link.png)
+![A run row hovered, and its route line lifted in the band above](docs/images/console-row-link.png)
+
+The whole screen, for context:
+
+![The dispatch console at 1440px](docs/images/console-after.png)
 
 Every control stays reachable at 375px without sideways scrolling, and each
 run becomes its own block:
