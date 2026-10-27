@@ -1,0 +1,204 @@
+{
+  "version": 1,
+  "updated": "2026-10-27",
+  "note": "Curated component sources, read at the source on the date above. 'licence' records what was read, not what is assumed. Entries with a 'registry' url are searchable by scripts/find-components.js; the public directory at https://ui.shadcn.com/r/registries.json covers the other 500 registries.",
+  "components": [
+    {
+      "id": "@shadcn",
+      "url": "https://ui.shadcn.com",
+      "registry": "https://ui.shadcn.com/r/{name}.json",
+      "catalogue": "https://ui.shadcn.com/r/index.json",
+      "for": ["primitives", "form", "table", "dialog", "navigation", "sidebar", "login"],
+      "stack": "react+tailwind+shadcn",
+      "licence": "MIT",
+      "licence-read": "shadcn-ui/ui repository licence, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add <name>",
+      "notes": "The CLI's default registry; needs no namespace. Its 65 catalogue items are primitives with no descriptions, so search matches names only. Whole screens live at /blocks, which the catalogue does not list."
+    },
+    {
+      "id": "@coss",
+      "url": "https://coss.com/ui",
+      "registry": "https://coss.com/ui/r/{name}.json",
+      "for": ["primitives", "form", "combobox", "date-picker", "table", "command"],
+      "stack": "react+tailwind+base-ui",
+      "licence": "MIT for the UI packages; AGPL-3.0 is the repository default",
+      "licence-read": "cosscom/ui LICENSING.md and apps/origin/LICENSE.md, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add @coss/<name>",
+      "notes": "Cal.com's design system, built on Base UI, and the home of the former Origin UI (apps/origin). LICENSING.md puts apps/origin/ and apps/ui/ under MIT and everything else under AGPL-3.0, so check which directory a component comes from before shipping it."
+    },
+    {
+      "id": "@reui",
+      "url": "https://reui.io",
+      "registry": "https://reui.io/r/{style}/{name}.json",
+      "for": ["data-grid", "dense-table", "virtualised", "bulk-actions", "chart"],
+      "stack": "react+tailwind+shadcn",
+      "licence": "MIT",
+      "licence-read": "keenthemes/reui repository licence, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add @reui/<name>",
+      "notes": "Data grids on TanStack Table. Its catalogue answers at /r/registry.json after a redirect."
+    },
+    {
+      "id": "@kibo-ui",
+      "url": "https://www.kibo-ui.com",
+      "registry": "https://www.kibo-ui.com/r/{name}.json",
+      "for": ["table", "kanban", "gantt", "calendar", "editor"],
+      "stack": "react+tailwind+shadcn",
+      "licence": "MIT",
+      "licence-read": "haydenbleasel/kibo repository licence, 2026-10-27",
+      "install": "pnpm dlx kibo-ui add <name>",
+      "notes": "41 catalogue items. The repository was last pushed 2026-05-04."
+    },
+    {
+      "id": "@magicui",
+      "url": "https://magicui.design",
+      "registry": "https://magicui.design/r/{name}",
+      "for": ["marketing-effect", "animated-text", "background", "marquee", "globe"],
+      "stack": "react+tailwind+motion",
+      "licence": "MIT",
+      "licence-read": "magicuidesign/magicui repository licence, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add @magicui/<name>",
+      "notes": "250 catalogue items, of which 170 are demos. Public pages, not consoles. Magic UI Pro is a separate paid product at $199 once."
+    },
+    {
+      "id": "@react-bits",
+      "url": "https://reactbits.dev",
+      "registry": "https://reactbits.dev/r/{name}.json",
+      "for": ["animation", "text-effect", "background", "scroll-effect"],
+      "stack": "react+tailwind",
+      "licence": "MIT with Commons Clause: you may ship them in a product, you may not sell or redistribute the components themselves",
+      "licence-read": "DavidHDev/react-bits LICENSE.md, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add @react-bits/<name>",
+      "notes": "1,274 catalogue items, the largest in the directory. The Commons Clause rules it out of anything you resell as components, including a template pack."
+    },
+    {
+      "id": "@uiarc",
+      "url": "https://uiarc.dev",
+      "registry": "https://uiarc.dev/r/{name}.json",
+      "for": ["animation", "block", "marketing", "pricing", "hero"],
+      "stack": "react+tailwind+shadcn",
+      "licence": "not stated on the site's pages that were read",
+      "licence-read": "uiarc.dev home page, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add @uiarc/<name>",
+      "notes": "120 components and 22 blocks free, no account. Arc Pro adds 68 components and 91 blocks for $249 once. Ships an llms.txt and an MCP server: claude mcp add --transport http arc https://uiarc.dev/api/mcp"
+    },
+    {
+      "id": "@23rd",
+      "url": "https://23rd.dev",
+      "registry": "https://23rd.dev/r/{name}.json",
+      "for": ["shader", "background", "interactive-effect"],
+      "stack": "react",
+      "licence": "not stated on the home page",
+      "licence-read": "23rd.dev home page, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add @23rd/<name>",
+      "notes": "20 catalogue items: shaders, gradients, orbs. One visual trick each, for a public page. No MCP or API is advertised."
+    },
+    {
+      "id": "@aceternity",
+      "url": "https://ui.aceternity.com",
+      "registry": "https://ui.aceternity.com/registry/{name}.json",
+      "for": ["marketing-effect", "hero", "card-effect"],
+      "stack": "react+tailwind+motion",
+      "licence": "not stated on the pricing page",
+      "licence-read": "ui.aceternity.com/pricing, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add @aceternity/<name>",
+      "notes": "100+ free components with MCP access; blocks and templates are paid at $169 for a year, $199 lifetime or $1,590 for a team of ten. The directory marked its registry health 'degraded' on 2026-10-27."
+    },
+    {
+      "id": "@hyperui",
+      "url": "https://hyperui.dev",
+      "registry": null,
+      "for": ["plain-tailwind", "marketing-section", "form"],
+      "stack": "tailwind, no react",
+      "licence": "MIT",
+      "licence-read": "markmead/hyperui repository licence, 2026-10-27",
+      "install": "copy from the page",
+      "notes": "Markup, not components. Right where the project has no React."
+    },
+    {
+      "id": "tremor",
+      "url": "https://tremor.so",
+      "registry": null,
+      "for": ["chart", "kpi", "spark-chart"],
+      "stack": "react+tailwind",
+      "licence": "Apache-2.0",
+      "licence-read": "tremorlabs/tremor repository licence and the npm record for @tremor/react, 2026-10-27",
+      "install": "copy from the page; Tremor Raw has no CLI",
+      "notes": "Slowing down: the repository was last pushed 2025-10-10 and @tremor/react 3.18.7 was last published 2025-01-13. It is not in the shadcn registry directory. Prefer @reui charts or a chart built on Recharts for new work, and say why if you choose Tremor."
+    }
+  ],
+  "screens": [
+    {
+      "id": "shadcn-blocks",
+      "url": "https://ui.shadcn.com/blocks",
+      "for": ["dashboard", "sidebar", "login", "calendar-screen"],
+      "stack": "react+tailwind+shadcn",
+      "licence": "MIT",
+      "licence-read": "shadcn-ui/ui repository licence, 2026-10-27",
+      "install": "pnpm dlx shadcn@latest add dashboard-01"
+    },
+    {
+      "id": "component-gallery",
+      "url": "https://component.gallery",
+      "for": ["pattern-reference", "naming", "component-api"],
+      "stack": "any",
+      "licence": "not stated",
+      "licence-read": "component.gallery home page, 2026-10-27",
+      "install": "read, do not install",
+      "notes": "60 components, 95 design systems and 2,671 examples of how real design systems build each one, by Iain Bean. Search is Pagefind; there is no API or MCP. Read it to decide what a component should do and be called, not to get code."
+    },
+    {
+      "id": "21st",
+      "url": "https://21st.dev/community/libraries",
+      "for": ["library-discovery"],
+      "stack": "react+tailwind+shadcn",
+      "licence": "no component licence stated",
+      "licence-read": "21st.dev/community/libraries and 21st.dev/pricing, 2026-10-27",
+      "install": "account needed",
+      "notes": "An index of 167 libraries, useful for finding a library by name. The free plan allows 2 copies a day; MCP component retrieval starts at the Builder plan, $6 a month billed yearly. Most of the libraries it indexes are also in the shadcn directory, which is free and scriptable, so search there first."
+    }
+  ],
+  "patterns": [
+    {
+      "id": "carbon-empty-states",
+      "url": "https://carbondesignsystem.com/patterns/empty-states-pattern/",
+      "for": ["empty-state"],
+      "stack": "any",
+      "licence": "Apache-2.0 for the design system",
+      "licence-read": "not re-read on 2026-10-27; inherited from the blueprint skill's list"
+    },
+    {
+      "id": "primer-ui-patterns",
+      "url": "https://primer.style/product/ui-patterns/",
+      "for": ["loading", "saving", "feedback", "progressive-disclosure"],
+      "stack": "any",
+      "licence": "not read",
+      "licence-read": "not re-read on 2026-10-27; inherited from the blueprint skill's list"
+    }
+  ],
+  "rejected": [
+    {
+      "url": "https://www.originkit.dev",
+      "reason": "the page carries one tagline and nothing else: no components, licence, install method or pricing, read 2026-10-27"
+    },
+    {
+      "url": "https://orbs.jakubantalik.com",
+      "reason": "moved to libraries.dev/orbs; the orbs are an npm package (thinking-orbs) with no licence stated, read 2026-10-27"
+    },
+    {
+      "url": "https://transitions.dev",
+      "reason": "no licence and no prices stated, and 'Pro only' transitions are behind an account. Its npx transitions-agent motion check is local and deterministic and may be worth running on its own, read 2026-10-27"
+    },
+    {
+      "url": "https://www.beautifului.dev",
+      "reason": "21 primitives for agent interfaces, footer links to an MIT licence, but no install route and no registry entry. Copy by hand if one fits, read 2026-10-27"
+    },
+    {
+      "url": "https://www.rareui.com",
+      "reason": "27 animated components, 'open-source' but no licence named, and not in the shadcn registry directory, read 2026-10-27"
+    },
+    {
+      "url": "https://www.agentation.com",
+      "reason": "not a component source: a dev-dependency toolbar that turns UI annotations into agent context. Free for internal use, commercial redistribution needs a licence, desktop only, read 2026-10-27"
+    }
+  ]
+}

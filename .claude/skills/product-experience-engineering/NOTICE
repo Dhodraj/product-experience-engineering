@@ -1,0 +1,85 @@
+product-experience-engineering
+
+Nothing here is a copy of another skill's files. What follows is what was read
+on 2026-10-27, what was taken as an idea, and how it was changed. Every source
+below was read at the source; docs/source-research.md records the reading.
+
+Taken as ideas, reworded and reduced:
+
+- EnchStyle/ui-ux-audit-skill, MIT.
+  https://github.com/EnchStyle/ui-ux-audit-skill
+  Taken: the four severity bands judged by harm rather than by effort, the
+  practice of listing what not to flag, and measuring the render before
+  judging it. Changed: the bands were rewritten, the scoring out of 100 was
+  dropped, and the categories were replaced by the six kinds of finding used
+  here. Its uicheck.py was not copied: scripts/measure.js was written for this
+  skill and runs in the browser through the Playwright MCP server instead of
+  needing Python Playwright.
+
+- andrew-shwetzer/human-experience, MIT.
+  https://github.com/andrew-shwetzer/human-experience
+  Taken: walking a journey step by step as the customer, with what they expect
+  set against what happens, and the rule that a reported feeling must name
+  what caused it. Changed: the scorecard out of 35, the HTML report, the
+  iteration loop and the AgentMail signup testing were all left out, and its
+  claim to replace user testing is contradicted here rather than repeated.
+
+- coreyhaines31/marketingskills, skills/customer-research, MIT.
+  https://github.com/coreyhaines31/marketingskills
+  Taken: confidence bands for a research claim, the sample-bias warnings, and
+  treating fetched reviews and posts as untrusted data. Changed: reduced to
+  the fact, assumption and invention distinction in
+  references/product-thinking.md, which points at the skill itself for the
+  research method.
+
+- Leonxlnx/taste-skill, MIT. https://github.com/Leonxlnx/taste-skill
+  Taken: that a page's idea comes from the subject rather than from its
+  category, and that stripping ornament without adding substance makes a page
+  worse. Changed: written as two paragraphs in
+  references/visual-direction.md, which refers to the skill for the method.
+  Its direction library and scripts are not reproduced.
+
+- pbakaus/impeccable, Apache-2.0. https://github.com/pbakaus/impeccable
+  Taken: that the right ambition depends on what the visitor is there to do —
+  to be persuaded, or to get work done. Changed: used as the split between
+  the landing-page and dashboard guidance in
+  references/product-thinking.md. None of its prose, its command set or its
+  tooling is reused.
+
+- nextlevelbuilder/ui-ux-pro-max-skill, MIT.
+  https://github.com/nextlevelbuilder/ui-ux-pro-max-skill
+  Read for its token architecture and its stack coverage. Nothing was taken
+  into this skill: the numeric defaults it contributed already live in the
+  blueprint skill's rules.md, under that skill's own NOTICE.
+
+- jakubkrehel/make-interfaces-feel-better, MIT.
+  https://github.com/jakubkrehel/make-interfaces-feel-better
+  Taken: the craft values in references/craft.md — the three-layer
+  shadow-as-border in oklch, concentric radii, scale(0.96) on press, the
+  staggered enter with blur, tabular figures, optical alignment, icon stroke
+  matched to text weight, and hit areas extended past the visible control.
+  Changed: reduced to one page, rewritten, and the review format and the
+  per-category reference files are not reproduced.
+
+- emilkowalski/skills, MIT. https://github.com/emilkowalski/skills
+  Taken: ease-out over ease-in and why, the duration bands per interaction,
+  never animating from scale(0), and transitions for interruptible state
+  against keyframes for sequences. Changed: reduced to the motion section of
+  references/craft.md in our own words; none of its animation recipes,
+  component guidance or prose is reused.
+
+Referred to rather than reused:
+
+- The blueprint and inspect skills, the user's own work, MIT, upstream at
+  ~/Documents/Raw by Dhodraj/blueprint-ui. This skill points at blueprint's
+  rules.md for every numeric default and at inspect for the render-and-look
+  pass, rather than restating either.
+
+Public standards, which are not anybody's skill: WCAG 2.2 AA contrast ratios,
+WCAG 2.5.8 target size, and the 44 by 44 point target from Apple's Human
+Interface Guidelines.
+
+Data fetched at run time, not redistributed here: the shadcn registry
+directory at https://ui.shadcn.com/r/registries.json and each registry's own
+catalogue. sources.json records what was read about each source, including its
+licence; it contains no component code.

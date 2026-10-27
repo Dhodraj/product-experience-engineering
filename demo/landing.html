@@ -1,0 +1,618 @@
+<!doctype html>
+<!--
+  Consign — the public page, built on the same direction as the console:
+  ink on warm paper, one signal colour, display numerals, and the planned-
+  against-actual route line as the signature element.
+
+  The argument, one claim per section, written before the layout:
+    hero     a run that is slipping is knowable hours before it is late
+    live     you can see it happen: move the clock, watch the sheet turn
+    proof    the console is the product; here it is, at size
+    answers  the three objections a dispatcher actually raises
+    trial    one action, named for what it does
+
+  Every run, depot, time and figure is sample content. There are no customer
+  logos, quotations, review scores or business statistics on this page,
+  because there are none to show.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consign — know which run is slipping, hours before it is late</title>
+<style>
+  :root {
+    --paper: #f7f5f1;
+    --ink: #121210;
+    --ink-2: #44423d;
+    --ink-3: #6e6b64;
+    --rule: #dedad2;
+    --rule-2: #ece8e1;
+    --rule-2: #ece8e1;
+    --signal: #b4420f;
+    --stop: #8c1c24;
+    --good: #1f5c3d;
+    --track: #e6e2da;
+    --surface: #ffffff;
+    --lift:
+      0 0 0 1px oklch(0 0 0 / .055),
+      0 1px 2px -1px oklch(0 0 0 / .06),
+      0 2px 4px 0 oklch(0 0 0 / .035);
+    --lift-hover:
+      0 0 0 1px oklch(0 0 0 / .085),
+      0 2px 4px -2px oklch(0 0 0 / .08),
+      0 8px 20px -6px oklch(0 0 0 / .09);
+    --out: cubic-bezier(.23, 1, .32, 1);
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 20px; --s5: 32px; --s6: 56px; --s7: 96px;
+    --t-micro: 12px; --t-small: 14px; --t-body: 17px; --t-lead: 22px;
+    --t-mid: 30px; --t-big: clamp(38px, 5.2vw, 74px);
+    font-family: "Inter", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font-size: var(--t-body); line-height: 1.5;
+         -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 3px;
+                   border-radius: 3px; }
+  h1, h2, h3 { text-wrap: balance; }
+  p, dd { text-wrap: pretty; }
+
+  /* Press feedback on every pressable thing. */
+  .cta, button { transition-property: background-color, color, box-shadow, transform;
+                 transition-duration: 150ms; transition-timing-function: var(--out); }
+  .cta:active, button:active { transform: scale(.96); }
+  .cta:hover { box-shadow: var(--lift-hover); }
+
+  /* Enter once. The headline arrives a word at a time, then the rest. */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(12px); filter: blur(5px); }
+    to   { opacity: 1; transform: none;             filter: blur(0); }
+  }
+  .rise { opacity: 0; animation: rise 520ms var(--out) forwards; }
+  h1 .w { display: inline-block; opacity: 0;
+          animation: rise 560ms var(--out) forwards; }
+  .reveal { opacity: 0; }
+  .reveal.seen { animation: rise 560ms var(--out) forwards; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 1ms !important;
+                             animation-delay: 0ms !important;
+                             transition-duration: 1ms !important; }
+    .rise, h1 .w, .reveal { opacity: 1; }
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding-inline: var(--s4); }
+  h1, h2, h3 { letter-spacing: -.025em; }
+
+  /* ---------------------------------------------------------------- head */
+  header { border-bottom: 1px solid var(--rule); background: var(--paper);
+           position: sticky; top: 0; z-index: 3; }
+  header .wrap { display: flex; align-items: center; gap: var(--s4);
+                 min-height: 64px; }
+  .mark { display: flex; align-items: baseline; gap: var(--s2);
+          font-weight: 650; font-size: var(--t-lead); letter-spacing: -.03em; }
+  .mark .sq { width: 10px; height: 10px; background: var(--signal); flex: none;
+              transform: translateY(-2px); }
+  header nav { margin-left: auto; display: flex; gap: var(--s1); }
+  header nav a { display: inline-flex; align-items: center; min-height: 40px;
+                 padding-inline: var(--s3); color: var(--ink-2);
+                 text-decoration: none; font-size: var(--t-small); }
+  header nav a:hover { color: var(--ink); }
+  .cta { display: inline-flex; align-items: center; justify-content: center;
+         min-height: 48px; padding: 0 var(--s4); background: var(--ink);
+         color: #fff; border: 0; border-radius: 4px; font: inherit;
+         font-size: var(--t-small); font-weight: 600; text-decoration: none;
+         cursor: pointer; }
+  .cta.big { min-height: 60px; padding: 0 var(--s5); font-size: var(--t-body); }
+  .cta.signal { background: var(--signal); }
+  header .cta { min-height: 40px; }
+
+  /* ---------------------------------------------------------------- hero */
+  .hero { border-bottom: 1px solid var(--rule); }
+  .hero .wrap { padding-block: var(--s7) var(--s6); }
+  h1 { font-size: var(--t-big); line-height: 1.0; margin: 0; max-width: 17ch;
+       font-weight: 680; }
+  h1 em { font-style: normal; color: var(--signal); }
+  .lead { font-size: var(--t-lead); color: var(--ink-2); max-width: 40ch;
+          margin: var(--s4) 0 var(--s5); }
+  .hero .actions { display: flex; align-items: center; gap: var(--s4);
+                   flex-wrap: wrap; }
+  .hero .under { font-size: var(--t-small); color: var(--ink-3); margin: 0; }
+
+  .call { margin: 0; }
+  .call figcaption { font-size: var(--t-micro); letter-spacing: .1em;
+                     text-transform: uppercase; color: var(--ink-3);
+                     margin-bottom: var(--s3); }
+  .call-track { position: relative; height: 30px;
+                border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
+  .call-track .plan { position: absolute; top: 0; bottom: 0; left: 7%; right: 0;
+                      background: var(--track);
+                      border-left: 1px solid #b9b2a6; border-right: 1px solid #b9b2a6; }
+  .call-track .run { position: absolute; top: 6px; bottom: 6px; left: 7%; right: 47%;
+                     background: var(--signal); border-radius: 999px;
+                     transform-origin: left center;
+                     animation: draw 760ms var(--out) 680ms both; }
+  @keyframes draw { from { transform: scaleX(.03); opacity: .35; }
+                    to   { transform: scaleX(1);   opacity: 1; } }
+  .call-track .now { position: absolute; top: -8px; width: 2px; height: 46px;
+                     left: 53%; background: var(--ink);
+                     animation: rise 460ms var(--out) 1140ms both; }
+  .call-scale { display: flex; justify-content: space-between; margin-top: var(--s3);
+                font-size: var(--t-micro); color: var(--ink-3); }
+  .call-said { margin: var(--s4) 0 0; font-size: var(--t-small); color: var(--ink-2);
+               max-width: 34ch; }
+  .call-said b { color: var(--signal); font-size: var(--t-body); display: block; }
+
+  /* ---------------------------------------------------- the live thing */
+  .live { background: var(--surface); border-top: 1px solid var(--rule);
+          border-bottom: 1px solid var(--rule); }
+  .live .wrap { padding-block: var(--s6); display: grid; gap: var(--s6);
+                grid-template-columns: minmax(0, 1fr); }
+  .live h2 { font-size: var(--t-mid); margin: 0 0 var(--s2); max-width: 22ch; }
+  .live .say { color: var(--ink-2); margin: 0 0 var(--s5); max-width: 56ch; }
+  .clock { display: grid; grid-template-columns: auto 1fr; gap: var(--s2) var(--s3);
+           align-items: center; margin-bottom: var(--s5); }
+  .clock .read { grid-column: 2; justify-self: start; }
+  .clock label { font-size: var(--t-small); color: var(--ink-3); }
+  .clock input { width: 100%; min-width: 0; accent-color: var(--signal);
+                 min-height: 44px; }
+  .clock .read { font-size: var(--t-mid); font-weight: 650;
+                 letter-spacing: -.03em; min-width: 5ch; }
+
+  .sheet { border: 0; border-radius: 14px; overflow: hidden;
+           background: var(--surface); box-shadow: var(--lift); }
+  .sheet .cap { display: flex; gap: var(--s3); align-items: baseline;
+                flex-wrap: wrap; padding: var(--s3) var(--s4);
+                border-bottom: 1px solid var(--rule); font-size: var(--t-micro);
+                color: var(--ink-3); }
+  .sheet .cap b { color: var(--signal); font-size: var(--t-small); }
+  .row { display: grid;
+         grid-template-columns: 112px minmax(140px, 1fr) minmax(0, 2fr) 136px 84px;
+         gap: var(--s4); align-items: center; padding: var(--s3) var(--s4);
+         border-bottom: 1px solid var(--rule-2); font-size: var(--t-small); }
+  .row:last-child { border-bottom: 0; }
+  .row .id { font-weight: 600; white-space: nowrap; }
+  .row .where { color: var(--ink-2); }
+  .row .slip { text-align: right; font-weight: 650; white-space: nowrap; }
+
+  .track { position: relative; height: 14px;
+           border-top: 1px solid var(--rule-2); border-bottom: 1px solid var(--rule-2); }
+  .track .plan { position: absolute; top: 0; bottom: 0; background: var(--track);
+                 border-left: 1px solid #b9b2a6; border-right: 1px solid #b9b2a6; }
+  .track .run { position: absolute; top: 3px; bottom: 3px; border-radius: 999px;
+                background: var(--good); transition: right .18s linear; }
+  .track .now { position: absolute; top: -5px; width: 2px; height: 24px;
+                background: var(--ink); transition: left .18s linear; }
+  .row[data-state="late"] .run { background: var(--signal); }
+  .row[data-state="stop"] .run { background: var(--stop); }
+  .row[data-state="late"] .slip, .row[data-state="stop"] .slip { color: var(--signal); }
+  .row[data-state="good"] .slip { color: var(--good); }
+  .standing { font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
+  .standing .m { width: 9px; height: 9px; flex: none; }
+  .row[data-state="good"] .standing { color: var(--good); }
+  .row[data-state="good"] .m { background: var(--good); border-radius: 50%; }
+  .row[data-state="late"] .standing { color: var(--signal); }
+  .row[data-state="late"] .m { background: var(--signal);
+                               clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .row[data-state="stop"] .standing { color: var(--stop); }
+  .row[data-state="stop"] .m { background: var(--stop); }
+
+  /* --------------------------------------------------------------- proof */
+  .proof { background: var(--ink); color: var(--paper); border-bottom: 0; }
+  .proof .wrap { padding-block: var(--s7); }
+  .proof h2 { font-size: var(--t-mid); margin: 0 0 var(--s2); max-width: 20ch; }
+  .proof .say { color: #b4afa6; max-width: 54ch; margin: 0 0 var(--s6); }
+  .shot { border: 0; border-radius: 18px; overflow: hidden; margin: 0;
+          background: var(--surface);
+          box-shadow: 0 0 0 1px oklch(1 0 0 / .1),
+                      0 2px 6px oklch(0 0 0 / .4),
+                      0 24px 60px -18px oklch(0 0 0 / .6);
+          transition: transform 320ms var(--out), box-shadow 320ms var(--out); }
+  .shot:hover { transform: translateY(-4px);
+                box-shadow: 0 0 0 1px oklch(1 0 0 / .16),
+                            0 4px 10px oklch(0 0 0 / .45),
+                            0 36px 80px -20px oklch(0 0 0 / .7); }
+  /* A neutral 1px inset on the image: pure black at low alpha, never a
+     tinted near-black, which reads as dirt on the edge. */
+  .shot img { outline: 1px solid oklch(0 0 0 / .1); outline-offset: -1px; }
+  .shot img { display: block; width: 100%; height: auto; }
+  .shot figcaption { padding: var(--s3) var(--s4); border-top: 1px solid var(--rule-2);
+                     font-size: var(--t-micro); color: var(--ink-3);
+                     background: var(--surface); }
+
+  .counts { display: grid; gap: var(--s4); margin-top: var(--s6);
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+  .counts { margin-top: var(--s7); }
+  .counts div { border-top: 1px solid oklch(1 0 0 / .18); padding-top: var(--s3); }
+  .counts dt { font-size: var(--t-micro); letter-spacing: .1em;
+               text-transform: uppercase; color: #8e8980; }
+  .counts dd { margin: var(--s2) 0 0; font-size: var(--t-mid); font-weight: 650;
+               letter-spacing: -.03em; color: var(--paper); }
+  .counts dd small { font-size: var(--t-small); font-weight: 400;
+                     color: #b4afa6; letter-spacing: 0; }
+
+  /* ------------------------------------------------------------- answers */
+  .answers .wrap { padding-block: var(--s7); display: grid; gap: var(--s6);
+                   grid-template-columns: minmax(0, 1fr); }
+  .answers h2 { font-size: var(--t-mid); margin: 0; max-width: 18ch; }
+  .answers dl { margin: 0; border-top: 1px solid var(--rule); }
+  .answers dt { font-weight: 650; padding-top: var(--s4); }
+  .answers dd { margin: var(--s2) 0 0; padding-bottom: var(--s4);
+                border-bottom: 1px solid var(--rule); color: var(--ink-2);
+                max-width: 62ch; }
+
+  /* --------------------------------------------------------------- trial */
+  .trial { background: var(--ink); color: var(--paper); }
+  .trial .wrap { padding-block: var(--s7); }
+  .trial h2 { font-size: var(--t-mid); margin: 0 0 var(--s2); max-width: 18ch; }
+  .trial .say { color: #cbc6bd; max-width: 48ch; margin: 0 0 var(--s5); }
+  form { max-width: 520px; }
+  .field { margin-bottom: var(--s4); }
+  .field label { display: block; font-size: var(--t-small); font-weight: 600;
+                 margin-bottom: var(--s1); }
+  .field input { width: 100%; min-height: 54px; padding: 0 var(--s4);
+                 border: 1px solid #55524c; border-radius: 8px; background: #1d1c1a;
+                 color: var(--paper); font: inherit; font-size: var(--t-small);
+                 transition: border-color 150ms var(--out), box-shadow 150ms var(--out); }
+  .field input:hover { border-color: #6f6b63; }
+  .field input:focus { border-color: var(--signal);
+                       box-shadow: 0 0 0 3px oklch(.52 .16 38 / .25); outline: none; }
+  .field .hint { font-size: var(--t-small); color: #a7a29a; margin: var(--s1) 0 0; }
+  .field .error { font-size: var(--t-small); color: #f0a78a; font-weight: 600;
+                  margin: var(--s1) 0 0; }
+  .field.bad input { border-color: #f0a78a; border-width: 2px; }
+  .done { border-left: 3px solid var(--signal); padding-left: var(--s4); }
+  .done h3 { margin: 0 0 var(--s2); font-size: var(--t-lead); }
+  .done p { margin: 0; color: #cbc6bd; font-size: var(--t-small); max-width: 50ch; }
+
+  footer .wrap { padding-block: var(--s5); font-size: var(--t-small);
+                 color: var(--ink-3); display: flex; gap: var(--s4);
+                 flex-wrap: wrap; }
+
+  @media (min-width: 980px) {
+    .hero .wrap { padding-block: var(--s7) var(--s7);
+                  display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+                  gap: var(--s7); align-items: start; }
+    .hero .call { align-self: center; }
+    .live .wrap, .answers .wrap { grid-template-columns: minmax(0, 360px) minmax(0, 1fr); }
+    .live .wrap > .words, .answers .wrap > h2 { position: sticky; top: 96px;
+                                                align-self: start; }
+  }
+  @media (max-width: 760px) {
+    .row { grid-template-columns: minmax(0, 1fr) 84px;
+           grid-template-areas: "id slip" "where where" "track track" "standing standing";
+           gap: var(--s2); row-gap: var(--s2); }
+    .row .id { grid-area: id; } .row .slip { grid-area: slip; }
+    .row .where { grid-area: where; } .row .track { grid-area: track; }
+    .row .standing { grid-area: standing; }
+    header nav a { display: none; }
+    header nav a.keep { display: inline-flex; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <span class="mark"><span class="sq"></span>Consign</span>
+    <nav aria-label="Sections">
+      <a href="#live">See it</a>
+      <a href="#proof">The console</a>
+      <a href="#answers">Questions</a>
+      <a class="cta keep" href="#trial">Start a trial</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="words">
+    <h1><span class="w" style="animation-delay:120ms">Know</span> <span class="w" style="animation-delay:190ms">which</span> <span class="w" style="animation-delay:260ms">run</span> <span class="w" style="animation-delay:330ms">is</span> <span class="w" style="animation-delay:400ms">slipping,</span> <span class="w" style="animation-delay:470ms"><em>hours</em></span> <span class="w" style="animation-delay:540ms">before</span> <span class="w" style="animation-delay:610ms">it</span> <span class="w" style="animation-delay:680ms">is</span> <span class="w" style="animation-delay:750ms">late.</span></h1>
+    <p class="lead rise" style="animation-delay:940ms">Consign reads the run sheet you already keep and watches
+      every run against its own times. Your dispatcher gets the run that is
+      drifting while there is still a decision to make.</p>
+    <div class="actions rise" style="animation-delay:1040ms">
+      <a class="cta big signal" href="#trial" id="hero-cta">Start a 14-day trial</a>
+      <p class="under">No card. One depot, unlimited runs, 14 days.</p>
+    </div>
+    </div>
+
+    <figure class="call rise" style="animation-delay:620ms">
+      <figcaption>Glasgow to Carlisle · due 14:20</figcaption>
+      <div class="call-track" role="img"
+           aria-label="Run 000418-GLA, Glasgow to Carlisle: planned 07:00 to 14:20,
+                       and at 11:34 it is 41 minutes behind its window.">
+        <span class="plan"></span><span class="run"></span><span class="now"></span>
+      </div>
+      <div class="call-scale"><span>07:00 planned</span><span>11:34 now</span><span>14:20 due</span></div>
+      <p class="call-said"><b>41 minutes behind.</b> Three hours before anyone
+        at Carlisle would have noticed.</p>
+    </figure>
+  </div>
+</section>
+
+<section class="live reveal" id="live">
+  <div class="wrap">
+    <div class="words">
+      <h2>Move the clock. Watch the sheet turn.</h2>
+      <p class="say">This is the same reading the console does, on four real
+        shapes of run. Drag the hour and see which run is already past saving
+        and which one still has slack.</p>
+      <div class="clock">
+        <label for="hour">Hour of the day</label>
+        <input id="hour" type="range" min="6" max="20" step="1" value="11"
+               aria-describedby="hour-read">
+        <span class="read" id="hour-read">11:00</span>
+      </div>
+    </div>
+
+    <div>
+      <div class="sheet">
+        <p class="cap">Glasgow depot · sample sheet
+          <b id="late-count">2 runs will miss their window</b></p>
+
+        <div class="row" data-state="good" data-plan="7,15" data-pace="1.05">
+          <span class="id">000418-GLA</span>
+          <span class="where">Glasgow to Carlisle</span>
+          <span class="track"><span class="plan"></span><span class="run"></span><span class="now"></span></span>
+          <span class="standing"><span class="m"></span><span class="word">On the sheet</span></span>
+          <span class="slip">—</span>
+        </div>
+
+        <div class="row" data-state="good" data-plan="9,17" data-pace="0.72">
+          <span class="id">000420-ABD</span>
+          <span class="where">Aberdeen to Dundee</span>
+          <span class="track"><span class="plan"></span><span class="run"></span><span class="now"></span></span>
+          <span class="standing"><span class="m"></span><span class="word">On the sheet</span></span>
+          <span class="slip">—</span>
+        </div>
+
+        <div class="row" data-state="good" data-plan="8,13" data-pace="0.95">
+          <span class="id">000427-PTH</span>
+          <span class="where">Perth to Stirling</span>
+          <span class="track"><span class="plan"></span><span class="run"></span><span class="now"></span></span>
+          <span class="standing"><span class="m"></span><span class="word">On the sheet</span></span>
+          <span class="slip">—</span>
+        </div>
+
+        <div class="row" data-state="good" data-plan="12,19" data-pace="1.3">
+          <span class="id">000419-EDI</span>
+          <span class="where">Edinburgh to Newcastle</span>
+          <span class="track"><span class="plan"></span><span class="run"></span><span class="now"></span></span>
+          <span class="standing"><span class="m"></span><span class="word">On the sheet</span></span>
+          <span class="slip">—</span>
+        </div>
+      </div>
+      <noscript><p class="say" style="margin-top:12px">With scripting off this
+        sheet shows the 11:00 reading, which is the one described above.</p></noscript>
+    </div>
+  </div>
+</section>
+
+<section class="proof reveal" id="proof">
+  <div class="wrap">
+    <h2>The console is the product.</h2>
+    <p class="say">One screen. The count that matters, the four runs slipping
+      furthest drawn against their planned windows, and the list underneath
+      with the action in the row.</p>
+
+    <figure class="shot">
+      <img src="console-shot.png?v=3" width="1440" height="900"
+           alt="The Consign console: the figure 38 beside the words runs will
+                miss their window, four route lines showing planned windows
+                against where each run has got to, and a table of runs with a
+                reassign control in each slipping row.">
+      <figcaption>Glasgow depot, 11:34. Sample data.</figcaption>
+    </figure>
+
+    <dl class="counts">
+      <div><dt>Reads your sheet</dt><dd>as it is <small>no migration</small></dd></div>
+      <div><dt>Flags a run</dt><dd>by window <small>not by last ping</small></dd></div>
+      <div><dt>Reassign</dt><dd>1 action <small>from the row</small></dd></div>
+      <div><dt>Trial</dt><dd>14 days <small>no card</small></dd></div>
+    </dl>
+  </div>
+</section>
+
+<section class="answers reveal" id="answers">
+  <div class="wrap">
+    <h2>The questions a dispatcher actually asks</h2>
+    <dl>
+      <dt>We already have a tracker. Why another one?</dt>
+      <dd>A tracker says where a truck is. Consign says whether the run will
+        make its times. That is a different question, and it is the one your
+        customer rings about.</dd>
+      <dt>How long before it is useful?</dt>
+      <dd>It reads the sheet as it is. The first flagged run appears on the
+        first day's runs, with nothing to migrate and nothing to re-key.</dd>
+      <dt>What happens to the depot that has no clean data?</dt>
+      <dd>A run with no planned window is shown as unwatched rather than
+        guessed at. You will see exactly how much of your sheet it can read
+        before you decide anything.</dd>
+      <dt>What happens after the trial?</dt>
+      <dd>The trial stops. Nothing is deleted, nothing is charged, and the
+        sheet is still yours.</dd>
+    </dl>
+  </div>
+</section>
+
+<section class="trial reveal" id="trial">
+  <div class="wrap">
+    <h2>Start a 14-day trial</h2>
+    <p class="say">One depot, every run on it, for fourteen days. We send one
+      email with the link and nothing else.</p>
+
+    <form id="trial-form" novalidate>
+      <div class="field" id="field-email">
+        <label for="email">Work email</label>
+        <input id="email" name="email" type="email" autocomplete="email"
+               aria-describedby="email-hint">
+        <p class="hint" id="email-hint">Where the depot link goes.</p>
+      </div>
+      <div class="field" id="field-depot">
+        <label for="depot">Depot name</label>
+        <input id="depot" name="depot" type="text" autocomplete="organization"
+               aria-describedby="depot-hint">
+        <p class="hint" id="depot-hint">The one you dispatch from. Add more later.</p>
+      </div>
+      <button class="cta big signal" type="submit">Start the trial</button>
+    </form>
+
+    <div class="done" id="done" hidden>
+      <h3>Your depot is ready</h3>
+      <p id="done-detail"></p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Consign · the run sheet, watched.</span>
+    <span>Sample page: every run, depot, time and figure on it is made up.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    /* Reveal a section the first time it arrives, never again. Below the
+       first screen only: the hero animates on load and must not wait. */
+    var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var pending = document.querySelectorAll(".reveal");
+    if (calm || !("IntersectionObserver" in window)) {
+      pending.forEach(function (el) { el.classList.add("seen"); });
+    } else {
+      var watcher = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("seen");
+          watcher.unobserve(entry.target);
+        });
+      }, { rootMargin: "0px 0px -12% 0px", threshold: 0.08 });
+      pending.forEach(function (el) { watcher.observe(el); });
+    }
+
+    /* ------------------------------------------------ the live sheet ---- */
+    var hour = document.getElementById("hour");
+    var read = document.getElementById("hour-read");
+    var lateCount = document.getElementById("late-count");
+    var rows = Array.prototype.slice.call(document.querySelectorAll(".row"));
+    var DAY_FROM = 6, DAY_TO = 20;
+
+    function place(value) { return ((value - DAY_FROM) / (DAY_TO - DAY_FROM)) * 100; }
+
+    function spell(minutes) {
+      if (minutes < 90) return minutes + " min";
+      var h = Math.floor(minutes / 60), m = minutes % 60;
+      return m === 0 ? h + " h" : h + " h " + m + " min";
+    }
+
+    function draw(now) {
+      var late = 0;
+      rows.forEach(function (row) {
+        var plan = row.dataset.plan.split(",").map(Number);
+        var start = plan[0], due = plan[1];
+        var pace = Number(row.dataset.pace);          // 1 = exactly to plan
+        var planned = due - start;
+        var doneFraction = now <= start ? 0
+          : Math.min(1, ((now - start) / planned) / pace);
+        var projectedEnd = start + planned * pace;
+        var slipMinutes = Math.round((projectedEnd - due) * 60);
+
+        var state;
+        if (now <= start) state = "good";
+        else if (pace > 1.25 && now > start + planned * 0.5) state = "stop";
+        else if (slipMinutes > 10 && now > start) state = "late";
+        else state = "good";
+        if (state !== "good") late += 1;
+
+        row.dataset.state = state;
+        row.querySelector(".word").textContent =
+          state === "stop" ? "Will not make it"
+          : state === "late" ? "Behind"
+          : now <= start ? "Not started" : "On the sheet";
+        row.querySelector(".slip").textContent =
+          state === "good"
+            ? (now <= start ? "—" : "−" + spell(Math.abs(Math.min(0, slipMinutes))))
+            : "+" + spell(slipMinutes);
+
+        var track = row.querySelector(".track");
+        track.querySelector(".plan").style.left = place(start) + "%";
+        track.querySelector(".plan").style.right = (100 - place(due)) + "%";
+        var runEnd = start + planned * doneFraction;
+        track.querySelector(".run").style.left = place(start) + "%";
+        track.querySelector(".run").style.right = (100 - place(runEnd)) + "%";
+        track.querySelector(".now").style.left = place(now) + "%";
+        track.setAttribute("role", "img");
+        track.setAttribute("aria-label",
+          row.querySelector(".where").textContent + ": due " + due + ":00, " +
+          row.querySelector(".word").textContent.toLowerCase() + " at " + now + ":00");
+      });
+
+      read.textContent = (now < 10 ? "0" : "") + now + ":00";
+      lateCount.textContent = late === 0
+        ? "every run will make its window"
+        : late + (late === 1 ? " run will miss its window" : " runs will miss their window");
+    }
+
+    hour.addEventListener("input", function () { draw(Number(hour.value)); });
+    draw(Number(hour.value));
+
+    /* ------------------------------------------------------- the form --- */
+    var form = document.getElementById("trial-form");
+    var done = document.getElementById("done");
+
+    function fault(fieldId, message) {
+      var field = document.getElementById(fieldId);
+      var input = field.querySelector("input");
+      var old = field.querySelector(".error");
+      if (old) old.remove();
+      field.classList.add("bad");
+      var p = document.createElement("p");
+      p.className = "error";
+      p.id = input.id + "-error";
+      p.textContent = message;
+      field.appendChild(p);
+      input.setAttribute("aria-invalid", "true");
+      input.setAttribute("aria-describedby", input.id + "-hint " + p.id);
+    }
+
+    function clear(fieldId) {
+      var field = document.getElementById(fieldId);
+      var input = field.querySelector("input");
+      var old = field.querySelector(".error");
+      if (old) old.remove();
+      field.classList.remove("bad");
+      input.removeAttribute("aria-invalid");
+      input.setAttribute("aria-describedby", input.id + "-hint");
+    }
+
+    form.addEventListener("submit", function (event) {
+      event.preventDefault();
+      var email = document.getElementById("email");
+      var depot = document.getElementById("depot");
+      var faults = 0;
+      clear("field-email"); clear("field-depot");
+
+      if (!email.value.trim()) {
+        fault("field-email", "Enter the email the depot link should go to."); faults += 1;
+      } else if (!/^[^@\s]+@[^@\s.]+\.[^@\s]+$/.test(email.value.trim())) {
+        fault("field-email", "That address is missing an @ or a domain. Example: dispatch@yourdepot.co.uk");
+        faults += 1;
+      }
+      if (!depot.value.trim()) {
+        fault("field-depot", "Name the depot you dispatch from."); faults += 1;
+      }
+      if (faults > 0) { form.querySelector(".bad input").focus(); return; }
+
+      form.hidden = true;
+      done.hidden = false;
+      document.getElementById("done-detail").textContent =
+        "We have sent the link for " + depot.value.trim() + " to " +
+        email.value.trim() + ". It works for 14 days and nothing is charged.";
+      done.setAttribute("tabindex", "-1");
+      done.focus();
+    });
+  })();
+</script>
+</body>
+</html>

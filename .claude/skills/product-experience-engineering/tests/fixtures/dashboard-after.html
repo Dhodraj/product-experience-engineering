@@ -1,0 +1,226 @@
+<!doctype html>
+<!--
+  dashboard-before.html after the audit's blocker, critical and warning
+  findings were fixed. Every control the first version had is still here and
+  still does the same thing: the search field, the two header controls, the
+  per-row menu and the create action. What changed is what the dispatcher can
+  see and reach.
+
+  tests/run.sh measures both files and asserts that the faults are gone and
+  the controls are still there.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dispatch — Overview</title>
+<style>
+  :root {
+    /* One scale, used by everything below. */
+    --ink: #1f2328;
+    --ink-quiet: #5a6169;
+    --line: #e4e7eb;
+    --ground: #f4f5f7;
+    --surface: #ffffff;
+    --accent: #15489c;
+    --late: #8a5300;
+    --failed: #a3202a;
+    --ok: #1d6b3f;
+    --radius: 8px;
+    --radius-small: 4px;
+    --space-1: 4px; --space-2: 8px; --space-3: 16px;
+    --space-4: 24px; --space-5: 32px;
+    --text-1: 13px; --text-2: 16px; --text-3: 20px; --text-4: 40px;
+    font-family: -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--ground); color: var(--ink);
+         font-size: var(--text-2); line-height: 1.5; }
+
+  .top { display: flex; align-items: center; gap: var(--space-2);
+         padding: var(--space-2) var(--space-3); background: var(--surface);
+         border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+  .brand { font-size: var(--text-2); font-weight: 600; }
+  .search { margin-left: auto; display: flex; align-items: center;
+            gap: var(--space-2); }
+  .search label { font-size: var(--text-1); color: var(--ink-quiet); }
+  .search input { padding: var(--space-2); border: 1px solid #b6bcc4;
+                  border-radius: var(--radius-small); font-size: var(--text-1);
+                  width: 200px; min-height: 36px; }
+  .iconbtn { min-width: 36px; min-height: 36px; border: 1px solid #b6bcc4;
+             background: var(--surface); border-radius: var(--radius-small);
+             cursor: pointer; font-size: var(--text-1); color: var(--ink); }
+
+  main { padding: var(--space-4) var(--space-3) var(--space-5); }
+  h1 { font-size: var(--text-3); margin: 0 0 var(--space-1); }
+  h2 { font-size: var(--text-2); margin: var(--space-5) 0 var(--space-2); }
+  .sub { color: var(--ink-quiet); font-size: var(--text-1);
+         margin: 0 0 var(--space-4); }
+
+  /* One figure dominates: the dispatcher's job is the late runs. */
+  .headline { background: var(--surface); border: 1px solid var(--line);
+              border-radius: var(--radius); padding: var(--space-4);
+              display: flex; align-items: baseline; gap: var(--space-3);
+              flex-wrap: wrap; }
+  .headline .value { font-size: var(--text-4); font-weight: 700;
+                     color: var(--late); line-height: 1.1; }
+  .headline .label { font-size: var(--text-2); font-weight: 600; }
+  .headline .note { font-size: var(--text-1); color: var(--ink-quiet);
+                    margin-left: auto; }
+
+  .figures { list-style: none; margin: var(--space-3) 0 0; padding: 0;
+             display: grid; gap: var(--space-2);
+             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .figures li { background: var(--surface); border: 1px solid var(--line);
+                border-radius: var(--radius); padding: var(--space-2) var(--space-3); }
+  .figures .label { color: var(--ink-quiet); font-size: var(--text-1); }
+  .figures .value { font-size: var(--text-3); font-weight: 600; }
+
+  .panel { background: var(--surface); border: 1px solid var(--line);
+           border-radius: var(--radius); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--text-1); }
+  th { text-align: left; color: var(--ink-quiet); font-weight: 600;
+       padding: var(--space-2) var(--space-3);
+       border-bottom: 1px solid var(--line); }
+  td { padding: var(--space-3); border-bottom: 1px solid var(--line);
+       overflow-wrap: anywhere; }
+  tr:last-child td { border-bottom: 0; }
+
+  /* Status carries a word and a shape, not only a colour. */
+  .status { display: inline-flex; align-items: center; gap: var(--space-1);
+            font-weight: 600; }
+  .status .mark { width: 10px; height: 10px; display: inline-block; }
+  .status.ok { color: var(--ok); }
+  .status.ok .mark { background: var(--ok); border-radius: 50%; }
+  .status.late { color: var(--late); }
+  .status.late .mark { background: var(--late);
+                       clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .status.failed { color: var(--failed); }
+  .status.failed .mark { background: var(--failed); }
+  .status.idle { color: var(--ink-quiet); }
+  .status.idle .mark { border: 2px solid var(--ink-quiet); border-radius: 50%;
+                       background: transparent; }
+
+  .rowbtn { min-width: 36px; min-height: 36px; border: 1px solid #b6bcc4;
+            background: var(--surface); border-radius: var(--radius-small);
+            cursor: pointer; color: var(--ink); font-size: var(--text-1); }
+
+  .cta { margin-top: var(--space-4); }
+  .cta button { padding: var(--space-2) var(--space-3);
+                border-radius: var(--radius-small); border: 0;
+                background: var(--accent); color: #fff;
+                font-size: var(--text-1); min-height: 40px; cursor: pointer; }
+
+  .foot { color: var(--ink-quiet); font-size: var(--text-1);
+          margin-top: var(--space-5); }
+
+  :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  /* At phone widths each run becomes its own block, so nothing scrolls
+     sideways and every control stays reachable with a thumb. */
+  @media (max-width: 760px) {
+    table, thead, tbody, tr, th, td { display: block; }
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden;
+            clip: rect(0 0 0 0); white-space: nowrap; }
+    tr { border-bottom: 1px solid var(--line); padding: var(--space-2) 0; }
+    tr:last-child { border-bottom: 0; }
+    td { border: 0; padding: var(--space-1) var(--space-3);
+         display: flex; gap: var(--space-2); }
+    td::before { content: attr(data-label); color: var(--ink-quiet);
+                 min-width: 84px; }
+  }
+</style>
+</head>
+<body>
+  <div class="top">
+    <span class="brand">Dispatch</span>
+    <div class="search">
+      <label for="run-search">Search runs</label>
+      <input id="run-search" type="search" placeholder="Run id or route">
+      <button class="iconbtn" aria-label="Filter runs">Filter</button>
+      <button class="iconbtn" aria-label="Notifications">Alerts</button>
+    </div>
+  </div>
+
+  <main>
+    <h1>Overview</h1>
+    <p class="sub">All regions. Figures from 27 October 2026, 11:34.</p>
+
+    <div class="headline">
+      <span class="value">38</span>
+      <span class="label">runs are late</span>
+      <span class="note">6 failed · 12 trucks idle</span>
+    </div>
+
+    <h2>Today</h2>
+    <ul class="figures">
+      <li><div class="label">Runs</div><div class="value">1,284</div></li>
+      <li><div class="label">On time</div><div class="value">91%</div></li>
+      <li><div class="label">Operators</div><div class="value">47</div></li>
+      <li><div class="label">Avg duration</div><div class="value">3h 12m</div></li>
+      <li><div class="label">Reassigns</div><div class="value">19</div></li>
+      <li><div class="label">Open tickets</div><div class="value">4</div></li>
+    </ul>
+
+    <h2>Runs</h2>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Run</th><th>Route</th><th>Operator</th><th>Status</th><th>Due</th><th>Duration</th><th>Actions</th></tr></thead>
+        <tbody>
+          <tr>
+            <td data-label="Run">RUN-2026-10-27-000418-GLA</td>
+            <td data-label="Route">Glasgow to Carlisle</td>
+            <td data-label="Operator">A. Okonkwo</td>
+            <td data-label="Status"><span class="status late"><span class="mark"></span>Late</span></td>
+            <td data-label="Due">14:20</td>
+            <td data-label="Duration">2h 51m</td>
+            <td data-label="Actions"><button class="rowbtn" aria-label="Actions for run RUN-2026-10-27-000418-GLA">Actions</button></td>
+          </tr>
+          <tr>
+            <td data-label="Run">RUN-2026-10-27-000419-EDI</td>
+            <td data-label="Route">Edinburgh to Newcastle</td>
+            <td data-label="Operator">M. Varga</td>
+            <td data-label="Status"><span class="status ok"><span class="mark"></span>On time</span></td>
+            <td data-label="Due">15:05</td>
+            <td data-label="Duration">1h 40m</td>
+            <td data-label="Actions"><button class="rowbtn" aria-label="Actions for run RUN-2026-10-27-000419-EDI">Actions</button></td>
+          </tr>
+          <tr>
+            <td data-label="Run">RUN-2026-10-27-000420-ABD</td>
+            <td data-label="Route">Aberdeen to Dundee</td>
+            <td data-label="Operator">S. Mbeki</td>
+            <td data-label="Status"><span class="status failed"><span class="mark"></span>Failed</span></td>
+            <td data-label="Due">13:00</td>
+            <td data-label="Duration">not recorded</td>
+            <td data-label="Actions"><button class="rowbtn" aria-label="Actions for run RUN-2026-10-27-000420-ABD">Actions</button></td>
+          </tr>
+          <tr>
+            <td data-label="Run">RUN-2026-10-27-000421-INV</td>
+            <td data-label="Route">Inverness to Perth</td>
+            <td data-label="Operator">Not assigned</td>
+            <td data-label="Status"><span class="status idle"><span class="mark"></span>Waiting</span></td>
+            <td data-label="Due">18:30</td>
+            <td data-label="Duration">not started</td>
+            <td data-label="Actions"><button class="rowbtn" aria-label="Actions for run RUN-2026-10-27-000421-INV">Actions</button></td>
+          </tr>
+          <tr>
+            <td data-label="Run">RUN-2026-10-27-000422-GLA</td>
+            <td data-label="Route">Glasgow to Stranraer</td>
+            <td data-label="Operator">J. Fitzpatrick</td>
+            <td data-label="Status"><span class="status ok"><span class="mark"></span>On time</span></td>
+            <td data-label="Due">16:45</td>
+            <td data-label="Duration">3h 05m</td>
+            <td data-label="Actions"><button class="rowbtn" aria-label="Actions for run RUN-2026-10-27-000422-GLA">Actions</button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cta">
+      <button>Create run</button>
+    </div>
+
+    <p class="foot">Dispatch · internal use only</p>
+  </main>
+</body>
+</html>

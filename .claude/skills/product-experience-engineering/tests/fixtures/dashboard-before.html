@@ -1,0 +1,115 @@
+<!doctype html>
+<!--
+  A fixture, not an example to copy. It is a plausible machine-built freight
+  dispatch dashboard carrying the faults this skill exists to catch: twelve
+  equal tiles with nothing dominant, status by colour alone, grey text below
+  the contrast floor, icon-only controls with no name, 20px targets, a skipped
+  heading level, an image with no reserved space or alt text, a table that
+  scrolls the page sideways on a phone, a placeholder used as the only label,
+  and no scale behind its type sizes, radii or shadows.
+
+  tests/run.sh measures it and asserts that each fault is found.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dispatch — Overview</title>
+<style>
+  :root { font-family: -apple-system, "Segoe UI", Roboto, sans-serif; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #f5f6f8; color: #202124; }
+  .top { display: flex; align-items: center; gap: 11px; padding: 14px 20px;
+         background: #fff; border-bottom: 1px solid #e8eaed; }
+  .brand { font-size: 17px; font-weight: 600; }
+  .top input { margin-left: auto; padding: 5px 9px; border: 1px solid #e3e3e3;
+               border-radius: 7px; font-size: 13px; width: 180px; }
+  .iconbtn { width: 20px; height: 20px; border: 0; background: #eceff1;
+             border-radius: 5px; cursor: pointer; }
+  main { padding: 18px 20px 40px; }
+  h1 { font-size: 21px; margin: 0 0 4px; }
+  .sub { color: #9aa0a6; font-size: 13px; margin: 0 0 18px; }
+  h3 { font-size: 15px; margin: 26px 0 10px; }
+  .tiles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 11px; }
+  .tile { background: #fff; border-radius: 9px; padding: 13px 15px;
+          box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+  .tile .label { color: #9aa0a6; font-size: 11px; text-transform: uppercase;
+                 letter-spacing: .4px; }
+  .tile .value { font-size: 23px; font-weight: 600; margin-top: 5px; }
+  .tile .delta { font-size: 12px; margin-top: 3px; }
+  .up { color: #34a853; } .down { color: #ea4335; }
+  .panel { background: #fff; border-radius: 11px; padding: 0;
+           box-shadow: 0 1px 3px rgba(0,0,0,.08); overflow: visible; }
+  table { width: 100%; min-width: 760px; border-collapse: collapse;
+          font-size: 13px; }
+  th { text-align: left; color: #9aa0a6; font-weight: 500; font-size: 12px;
+       padding: 11px 14px; border-bottom: 1px solid #eceff1; }
+  td { padding: 13px 14px; border-bottom: 1px solid #f1f3f4; }
+  .dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; }
+  .dot.ok { background: #34a853; } .dot.late { background: #fbbc05; }
+  .dot.failed { background: #ea4335; } .dot.idle { background: #dadce0; }
+  .rowbtn { width: 22px; height: 22px; border: 0; background: transparent;
+            border-radius: 4px; cursor: pointer; color: #9aa0a6; }
+  .hero { width: 100%; max-width: 360px; border-radius: 13px; display: block;
+          margin: 14px 0; }
+  .foot { color: #9aa0a6; font-size: 10px; margin-top: 26px; }
+  .cta { margin-top: 18px; display: flex; gap: 9px; }
+  .cta button { padding: 9px 15px; border-radius: 6px; border: 0;
+                background: #1a73e8; color: #fff; font-size: 13px;
+                cursor: pointer; }
+  .cta button.second { background: #1a73e8; }
+</style>
+</head>
+<body>
+  <div class="top">
+    <span class="brand">Dispatch</span>
+    <input placeholder="Search runs">
+    <button class="iconbtn"></button>
+    <button class="iconbtn"></button>
+  </div>
+
+  <main>
+    <h1>Overview</h1>
+    <p class="sub">All regions, last 24 hours. Updated a while ago.</p>
+
+    <h3>Today</h3>
+    <div class="tiles">
+      <div class="tile"><div class="label">Runs</div><div class="value">1,284</div><div class="delta up">+2.1%</div></div>
+      <div class="tile"><div class="label">On time</div><div class="value">91%</div><div class="delta up">+0.4%</div></div>
+      <div class="tile"><div class="label">Late</div><div class="value">38</div><div class="delta down">-1.2%</div></div>
+      <div class="tile"><div class="label">Failed</div><div class="value">6</div><div class="delta down">-0.3%</div></div>
+      <div class="tile"><div class="label">Idle trucks</div><div class="value">12</div><div class="delta up">+1.0%</div></div>
+      <div class="tile"><div class="label">Operators</div><div class="value">47</div><div class="delta up">+0.0%</div></div>
+      <div class="tile"><div class="label">Avg duration</div><div class="value">3h 12m</div><div class="delta down">-4m</div></div>
+      <div class="tile"><div class="label">Fuel spend</div><div class="value">£8,402</div><div class="delta up">+3.4%</div></div>
+      <div class="tile"><div class="label">Distance</div><div class="value">41,209</div><div class="delta up">+2.8%</div></div>
+      <div class="tile"><div class="label">Reassigns</div><div class="value">19</div><div class="delta up">+6.1%</div></div>
+      <div class="tile"><div class="label">Tickets</div><div class="value">4</div><div class="delta down">-2</div></div>
+      <div class="tile"><div class="label">Depots</div><div class="value">9</div><div class="delta up">+0</div></div>
+    </div>
+
+    <img class="hero" src="data:image/svg+xml;utf8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%20360%20120'%3E%3Crect%20width='360'%20height='120'%20fill='%23dfe3e8'/%3E%3C/svg%3E">
+
+    <h3>Runs</h3>
+    <div class="panel">
+      <table>
+        <thead><tr><th>Run</th><th>Route</th><th>Operator</th><th>Status</th><th>Due</th><th>Duration</th><th></th></tr></thead>
+        <tbody>
+          <tr><td>RUN-2026-10-27-000418-GLA</td><td>Glasgow to Carlisle</td><td>A. Okonkwo</td><td><span class="dot late"></span></td><td>14:20</td><td>2h 51m</td><td><button class="rowbtn">&#8943;</button></td></tr>
+          <tr><td>RUN-2026-10-27-000419-EDI</td><td>Edinburgh to Newcastle</td><td>M. Varga</td><td><span class="dot ok"></span></td><td>15:05</td><td>1h 40m</td><td><button class="rowbtn">&#8943;</button></td></tr>
+          <tr><td>RUN-2026-10-27-000420-ABD</td><td>Aberdeen to Dundee</td><td>S. Mbeki</td><td><span class="dot failed"></span></td><td>13:00</td><td>—</td><td><button class="rowbtn">&#8943;</button></td></tr>
+          <tr><td>RUN-2026-10-27-000421-INV</td><td>Inverness to Perth</td><td>unassigned</td><td><span class="dot idle"></span></td><td>18:30</td><td>—</td><td><button class="rowbtn">&#8943;</button></td></tr>
+          <tr><td>RUN-2026-10-27-000422-GLA</td><td>Glasgow to Stranraer</td><td>J. Fitzpatrick</td><td><span class="dot ok"></span></td><td>16:45</td><td>3h 05m</td><td><button class="rowbtn">&#8943;</button></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="cta">
+      <button>Create run</button>
+      <button class="second">New run</button>
+    </div>
+
+    <p class="foot">Dispatch · internal use only</p>
+  </main>
+</body>
+</html>

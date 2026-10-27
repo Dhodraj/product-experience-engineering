@@ -1,0 +1,580 @@
+<!doctype html>
+<!--
+  Consign — the dispatch console.
+
+  Direction: ink on warm paper, one signal colour, display numerals carrying
+  the hierarchy, and the product's own output — the planned-against-actual
+  route line — as the signature element. No dark theme, no gradient, no glass,
+  no grid of equal cards.
+
+  All data is sample data.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Consign — Glasgow depot</title>
+<style>
+  :root {
+    --paper: #f7f5f1;
+    --surface: #ffffff;
+    --ink: #121210;
+    --ink-2: #4a4843;
+    --ink-3: #6e6b64;
+    --rule: #dedad2;
+    --rule-2: #ece8e1;
+    --signal: #b4420f;      /* late, and the one accent */
+    --signal-wash: #fbeee7;
+    --stop: #8c1c24;        /* stopped */
+    --good: #1f5c3d;        /* on the sheet */
+    --track: #e6e2da;
+
+    /* Concentric radii: outer = inner + padding. */
+    --r-panel: 12px;   /* panel, padding 0 */
+    --r-row: 8px;      /* control inside a 4px inset */
+    --r-chip: 999px;
+
+    /* Depth is a shadow, not a border. Three layers: a 1px ring, a short
+       lift, and ambient. Pure black at low alpha, never a tinted neutral. */
+    --lift:
+      0 0 0 1px oklch(0 0 0 / .055),
+      0 1px 2px -1px oklch(0 0 0 / .06),
+      0 2px 4px 0 oklch(0 0 0 / .035);
+    --lift-hover:
+      0 0 0 1px oklch(0 0 0 / .085),
+      0 2px 4px -2px oklch(0 0 0 / .08),
+      0 6px 14px -4px oklch(0 0 0 / .07);
+    --ring: 0 0 0 1px oklch(0 0 0 / .07);
+
+    /* ease-out only. ease-in delays the frame the eye is on. */
+    --out: cubic-bezier(.23, 1, .32, 1);
+    --snap: cubic-bezier(.2, 0, 0, 1);
+
+    --r: 6px;
+    --s1: 4px; --s2: 8px; --s3: 12px; --s4: 20px; --s5: 32px; --s6: 56px;
+    --t-micro: 12px; --t-small: 13px; --t-body: 15px; --t-mid: 20px;
+    --t-big: clamp(64px, 11vw, 156px);
+    --band: #15150f;
+    --band-ink: #f2efe6;
+    --band-quiet: #9a968b;
+    --band-rule: oklch(1 0 0 / .1);
+
+    font-family: "Inter", -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--paper); color: var(--ink);
+         font-size: var(--t-body); line-height: 1.45;
+         -webkit-font-smoothing: antialiased; }
+  :focus-visible { outline: 2px solid var(--ink); outline-offset: 2px;
+                   border-radius: 3px; }
+  button { font: inherit; font-variant-numeric: tabular-nums; }
+  h1, h2, .count-said { text-wrap: balance; }
+  p { text-wrap: pretty; }
+
+  /* Press feedback. 0.96 exactly; below 0.95 reads as a flinch. */
+  button, .rail a { transition-property: box-shadow, background-color, color,
+                    border-color, transform;
+                    transition-duration: 140ms;
+                    transition-timing-function: var(--out); }
+  button:active { transform: scale(.96); }
+
+  /* Staged entrance, once, on first paint. Not on any repeated interaction. */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(10px); filter: blur(4px); }
+    to   { opacity: 1; transform: none;             filter: blur(0); }
+  }
+  .rise { opacity: 0; animation: rise 460ms var(--out) forwards; }
+  .rise-1 { animation-delay: 40ms; }
+  .rise-2 { animation-delay: 140ms; }
+  .rise-3 { animation-delay: 240ms; }
+  .rise-4 { animation-delay: 340ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 1ms !important;
+                             animation-delay: 0ms !important;
+                             transition-duration: 1ms !important; }
+    .rise { opacity: 1; }
+  }
+
+  /* ---------------------------------------------------------------- shell */
+  .app { display: grid; grid-template-columns: 216px minmax(0, 1fr); min-height: 100vh; }
+
+  .rail { border-right: 1px solid var(--rule); background: var(--surface);
+          display: flex; flex-direction: column; }
+  .mark { display: flex; align-items: baseline; gap: var(--s2);
+          padding: var(--s4) var(--s4) var(--s5);
+          font-weight: 650; letter-spacing: -.02em; font-size: var(--t-mid); }
+  .mark .dot { width: 9px; height: 9px; background: var(--signal); flex: none;
+               transform: translateY(-2px); }
+  .rail nav { display: flex; flex-direction: column; gap: 2px; padding: 0 var(--s3); }
+  .rail a { display: flex; align-items: center; justify-content: space-between;
+            gap: var(--s2); padding: 9px var(--s3); min-height: 40px;
+            color: var(--ink-2); text-decoration: none; border-radius: var(--r-row);
+            font-size: var(--t-small); position: relative; }
+  .rail a:hover { background: var(--paper); color: var(--ink); }
+  .rail a[aria-current="page"] { background: var(--ink); color: #fff; font-weight: 600; }
+  .rail a .count { font-size: var(--t-micro); color: var(--ink-3); }
+  .rail a[aria-current="page"] .count { color: #ffffffb3; }
+  .rail .who { margin-top: auto; border-top: 1px solid var(--rule-2);
+               padding: var(--s3) var(--s4); font-size: var(--t-small);
+               color: var(--ink-3); }
+  .rail .who b { display: block; color: var(--ink); font-weight: 600; }
+
+  .main { min-width: 0; display: flex; flex-direction: column; }
+
+  .bar { display: flex; align-items: center; gap: var(--s3);
+         padding: var(--s3) var(--s5); border-bottom: 0;
+         background: var(--paper); flex-wrap: wrap; }
+  .bar .where { font-size: var(--t-small); color: var(--ink-3); }
+  .bar .where b { color: var(--ink); font-weight: 600; }
+  .bar form { margin-left: auto; display: flex; align-items: center; gap: var(--s2); }
+  .bar label { font-size: var(--t-small); color: var(--ink-3); }
+  .bar input { min-height: 40px; width: 230px; padding: 0 var(--s3);
+               border: 0; border-radius: var(--r-row); box-shadow: var(--ring);
+               background: var(--surface); font: inherit; font-size: var(--t-small);
+               transition: box-shadow 140ms var(--out); }
+  .bar input:hover { box-shadow: var(--lift); }
+  .bar input::placeholder { color: var(--ink-3); }
+  .bar .ghost { min-height: 40px; padding: 0 14px 0 var(--s3); border: 0;
+                background: var(--surface); border-radius: var(--r-row);
+                box-shadow: var(--lift); color: var(--ink);
+                font-size: var(--t-small); cursor: pointer; }
+  .bar .ghost:hover { box-shadow: var(--lift-hover); }
+
+  /* ------------------------------------------------------------ attention */
+  .attention { display: grid; grid-template-columns: minmax(260px, 380px) minmax(0, 1fr);
+               gap: var(--s6); align-items: center;
+               padding: var(--s5) var(--s5) var(--s4);
+               background: var(--band); color: var(--band-ink);
+               border-bottom: 0; }
+  .count-big { font-size: var(--t-big); font-weight: 700; letter-spacing: -.055em;
+               line-height: .82; margin: 0; color: #e8641f;
+               font-variant-numeric: tabular-nums; }
+  .count-said { font-size: var(--t-mid); font-weight: 600; margin: var(--s3) 0 0;
+                max-width: 15ch; letter-spacing: -.015em; color: var(--band-ink); }
+  .count-note { font-size: var(--t-small); color: var(--band-quiet); margin-top: var(--s4); }
+  .count-note b { color: var(--band-ink); font-weight: 600; }
+
+  /* The signature element: planned window against where the run actually is. */
+  .lines { display: flex; flex-direction: column; gap: var(--s3); min-width: 0; }
+  .lines h2 { font-size: var(--t-micro); letter-spacing: .12em; text-transform: uppercase;
+              color: var(--band-quiet); margin: 0 0 var(--s1); font-weight: 600; }
+  .line { display: grid; grid-template-columns: 112px minmax(0, 1fr) 84px;
+          gap: var(--s3); align-items: center; font-size: var(--t-small);
+          min-height: 34px; }
+  .line .id { color: var(--band-quiet); white-space: nowrap;
+              font-variant-numeric: tabular-nums; }
+  .line .slip { text-align: right; white-space: nowrap; font-weight: 600; }
+  .track { position: relative; height: 16px; background: transparent;
+           border-top: 1px solid var(--band-rule); border-bottom: 1px solid var(--band-rule); }
+  .track .plan { position: absolute; top: 0; bottom: 0;
+                 background: oklch(1 0 0 / .07);
+                 border-left: 1px solid oklch(1 0 0 / .22);
+                 border-right: 1px solid oklch(1 0 0 / .22); }
+  .track .now { position: absolute; top: -6px; width: 2px; height: 28px;
+                background: var(--band-ink); animation: rise 460ms var(--out) 560ms both; }
+  .track .run { position: absolute; top: 3px; bottom: 3px; border-radius: 999px;
+                background: var(--good); transform-origin: left center;
+                animation: draw 620ms var(--out) both;
+                transition: filter 140ms var(--out); }
+  .line:nth-child(3) .run { animation-delay: 260ms; }
+  .line:nth-child(4) .run { animation-delay: 340ms; }
+  .line:nth-child(5) .run { animation-delay: 420ms; }
+  .line:nth-child(6) .run { animation-delay: 500ms; }
+  @keyframes draw { from { transform: scaleX(.04); opacity: .4; }
+                    to   { transform: scaleX(1);   opacity: 1; } }
+  .track.is-late .run { background: #e8641f; }
+  .track.is-stopped .run { background: #d23b48; }
+  .track .run { background: #3faa72; }
+  .key { display: flex; align-items: center; gap: var(--s2); margin: 0 0 var(--s3);
+         padding-left: 124px; font-size: var(--t-micro); color: var(--band-quiet); }
+  .key span { display: inline-block; }
+  .key .short { display: none; }
+  .k-plan { width: 22px; height: 10px; background: oklch(1 0 0 / .07);
+            border-left: 1px solid oklch(1 0 0 / .22);
+            border-right: 1px solid oklch(1 0 0 / .22); }
+  .k-run { width: 22px; height: 6px; border-radius: 999px; background: var(--band-quiet);
+           margin-left: var(--s3); }
+  .k-now { width: 2px; height: 14px; background: var(--band-ink); margin-left: var(--s3); }
+  /* The row and the line are the same run, so one lights the other. */
+  .line { border-radius: var(--r-row); padding: 2px var(--s2); margin-inline: calc(var(--s2) * -1);
+          transition: background-color 140ms var(--out); }
+  .line.is-linked { background: oklch(1 0 0 / .08);
+                    box-shadow: 0 0 0 1px oklch(1 0 0 / .14); }
+  .line.is-linked .id { color: var(--band-ink); font-weight: 600; }
+  .lines .scale { display: flex; justify-content: space-between;
+                  font-size: var(--t-micro); color: var(--band-quiet);
+                  padding-left: 124px; padding-right: 96px; }
+
+  /* ---------------------------------------------------------------- table */
+  .runs { padding: var(--s5); }
+  .main { background: var(--paper); }
+  .runs header { display: flex; align-items: baseline; gap: var(--s3);
+                 margin-bottom: var(--s3); flex-wrap: wrap; }
+  .runs h2 { font-size: var(--t-mid); margin: 0; letter-spacing: -.015em; }
+  .runs .said { font-size: var(--t-small); color: var(--ink-3); }
+  .filters { margin-left: auto; display: flex; gap: var(--s1); }
+  .filters button { min-height: 36px; padding: 0 14px; border-radius: var(--r-chip);
+                    border: 0; box-shadow: var(--lift); background: var(--surface);
+                    color: var(--ink-2); font-size: var(--t-small); cursor: pointer; }
+  .filters button:hover { box-shadow: var(--lift-hover); color: var(--ink); }
+  .filters button[aria-pressed="true"] { background: var(--ink); color: #fff;
+                                         font-weight: 600;
+                                         box-shadow: 0 1px 2px oklch(0 0 0 / .2); }
+
+  .panel { background: var(--surface); border: 0; border-radius: var(--r-panel);
+           box-shadow: var(--lift); overflow: hidden; }
+  table { width: 100%; border-collapse: collapse; }
+  caption { text-align: left; font-size: var(--t-micro); color: var(--ink-3);
+            padding: var(--s3) var(--s4); border-bottom: 1px solid var(--rule-2); }
+  th { text-align: left; font-size: var(--t-micro); letter-spacing: .06em;
+       text-transform: uppercase; color: var(--ink-3); font-weight: 600;
+       padding: var(--s2) var(--s4); border-bottom: 1px solid var(--rule); }
+  td { padding: var(--s3) var(--s4); border-bottom: 1px solid var(--rule-2);
+       font-size: var(--t-small); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr { transition: background-color 120ms var(--out); }
+  tbody tr:hover { background: var(--paper); }
+  tr[data-late="yes"] td:first-child { box-shadow: inset 3px 0 0 var(--signal); }
+  .runid { font-weight: 600; letter-spacing: -.01em; white-space: nowrap; }
+  .route { color: var(--ink-2); }
+  .num { text-align: right; white-space: nowrap; }
+
+  .chip { display: inline-flex; align-items: center; gap: 6px; font-weight: 600;
+          white-space: nowrap; }
+  .chip .m { width: 9px; height: 9px; flex: none; }
+  .chip.good { color: var(--good); } .chip.good .m { background: var(--good); border-radius: 50%; }
+  .chip.late { color: var(--signal); } .chip.late .m { background: var(--signal);
+          clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+  .chip.stop { color: var(--stop); } .chip.stop .m { background: var(--stop); }
+  .chip.wait { color: var(--ink-3); } .chip.wait .m { border: 2px solid var(--ink-3);
+          border-radius: 50%; }
+
+  .act { min-height: 36px; padding: 0 14px; border-radius: var(--r-row);
+         border: 0; box-shadow: var(--lift); background: var(--surface);
+         font-size: var(--t-small); cursor: pointer; white-space: nowrap;
+         position: relative; }
+  /* The visible control is 36px; the hit area is 44px, and no two overlap. */
+  .act::after { content: ""; position: absolute; inset: -4px -2px; }
+  .act:hover { box-shadow: var(--lift-hover); }
+  tr[data-late="yes"] .act { color: var(--signal); background: var(--signal-wash);
+                             font-weight: 600;
+                             box-shadow: 0 0 0 1px oklch(.52 .16 38 / .3),
+                                         0 1px 2px -1px oklch(0 0 0 / .08); }
+  tr[data-late="yes"] .act:hover { box-shadow: 0 0 0 1px oklch(.52 .16 38 / .5),
+                                   0 2px 6px -2px oklch(.52 .16 38 / .3); }
+
+  .empty { display: none; padding: var(--s6) var(--s4); text-align: center; }
+  .empty h3 { margin: 0 0 var(--s2); font-size: var(--t-mid); letter-spacing: -.01em; }
+  .empty p { margin: 0 auto; max-width: 42ch; color: var(--ink-3);
+             font-size: var(--t-small); }
+  .panel.is-empty .empty { display: block; }
+  .panel.is-empty table { display: none; }
+
+  .said-live { position: absolute; width: 1px; height: 1px; overflow: hidden;
+               clip: rect(0 0 0 0); white-space: nowrap; }
+
+  /* ---------------------------------------------------------------- phone */
+  @media (max-width: 900px) {
+    .app { grid-template-columns: minmax(0, 1fr); }
+    .rail { flex-direction: row; align-items: center; gap: var(--s3);
+            border-right: 0; border-bottom: 1px solid var(--rule);
+            overflow-x: auto; }
+    .mark { padding: var(--s3) var(--s4); }
+    .rail nav { flex-direction: row; padding: 0 var(--s3) 0 0; }
+    .rail a { white-space: nowrap; }
+    .rail a .count { display: none; }
+    .rail .who { display: none; }
+    .bar, .runs { padding-inline: var(--s4); }
+    /* The caption collapsed to a narrow column once the table became blocks,
+       and the search label wrapped onto two lines. */
+    caption { display: block; width: auto; }
+    .bar form { margin-left: 0; width: 100%; }
+    .bar label { flex: none; }
+    .bar input { flex: 1; width: auto; min-width: 0; }
+    .key { display: flex; flex-wrap: wrap; gap: var(--s1) var(--s2);
+           align-items: center; }
+    .key .long { display: none; }
+    .key .short { display: inline; }
+    .k-run, .k-now { margin-left: 0; }
+    .attention { grid-template-columns: minmax(0, 1fr); gap: var(--s4);
+                 padding: var(--s5) var(--s4); }
+    .key { display: flex; align-items: center; gap: var(--s2); margin: 0 0 var(--s3);
+         padding-left: 124px; font-size: var(--t-micro); color: var(--band-quiet); }
+  .key span { display: inline-block; }
+  .key .short { display: none; }
+  .k-plan { width: 22px; height: 10px; background: oklch(1 0 0 / .07);
+            border-left: 1px solid oklch(1 0 0 / .22);
+            border-right: 1px solid oklch(1 0 0 / .22); }
+  .k-run { width: 22px; height: 6px; border-radius: 999px; background: var(--band-quiet);
+           margin-left: var(--s3); }
+  .k-now { width: 2px; height: 14px; background: var(--band-ink); margin-left: var(--s3); }
+  /* The row and the line are the same run, so one lights the other. */
+  .line { border-radius: var(--r-row); padding: 2px var(--s2); margin-inline: calc(var(--s2) * -1);
+          transition: background-color 140ms var(--out); }
+  .line.is-linked { background: oklch(1 0 0 / .08);
+                    box-shadow: 0 0 0 1px oklch(1 0 0 / .14); }
+  .line.is-linked .id { color: var(--band-ink); font-weight: 600; }
+  .lines .scale { padding-left: 0; padding-right: 0; }
+    .line { grid-template-columns: 96px minmax(0, 1fr) 72px; }
+
+    thead { position: absolute; width: 1px; height: 1px; overflow: hidden;
+            clip: rect(0 0 0 0); }
+    table, tbody, tr, td { display: block; }
+    tbody tr { border-bottom: 1px solid var(--rule); padding: var(--s3) 0; }
+    tbody tr:last-child { border-bottom: 0; }
+    td { border: 0; padding: 2px var(--s4); display: flex; gap: var(--s3); }
+    td::before { content: attr(data-label); color: var(--ink-3); min-width: 76px;
+                 font-size: var(--t-micro); text-transform: uppercase;
+                 letter-spacing: .06em; padding-top: 2px; }
+    .num { text-align: left; }
+    tr[data-late="yes"] td:first-child { box-shadow: inset 3px 0 0 var(--signal); }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="rail">
+    <div class="mark"><span class="dot"></span>Consign</div>
+    <nav aria-label="Sections">
+      <a href="#runs" aria-current="page">Runs <span class="count">82</span></a>
+      <a href="#operators">Operators <span class="count">47</span></a>
+      <a href="#depots">Depots <span class="count">9</span></a>
+      <a href="#sheets">Run sheets</a>
+      <a href="#settings">Settings</a>
+    </nav>
+    <div class="who"><b>A. Okonkwo</b>Glasgow depot · dispatcher</div>
+  </div>
+
+  <div class="main">
+    <div class="bar">
+      <span class="where"><b>Glasgow depot</b> · Thursday 27 October, 11:34</span>
+      <form role="search" onsubmit="return false">
+        <label for="q">Find a run</label>
+        <input id="q" type="search" placeholder="Run id, route or operator">
+        <button class="ghost" type="button">Filters</button>
+      </form>
+    </div>
+
+    <section class="attention rise rise-1" aria-labelledby="attention-heading">
+      <div>
+        <h1 id="attention-heading" class="count-big" data-to="38">38</h1>
+        <p class="count-said">runs will miss their window</p>
+        <p class="count-note">
+          <b>6</b> have stopped · <b>12</b> trucks are idle · last read 11:34
+        </p>
+      </div>
+
+      <div class="lines rise rise-2">
+        <h2>The four slipping furthest</h2>
+        <p class="key">
+          <span class="k-plan"></span> planned window
+          <span class="k-run"></span> <span class="long">where the run has got to</span><span class="short">run so far</span>
+          <span class="k-now"></span> now
+        </p>
+
+        <div class="line" data-run="000420-ABD">
+          <span class="id">000420-ABD</span>
+          <span class="track is-stopped" role="img"
+                aria-label="Aberdeen to Dundee: stopped at 11:02, 94 minutes past its window">
+            <span class="plan" style="left:6%;right:28%"></span>
+            <span class="run" style="left:6%;right:62%"></span>
+            <span class="now" style="left:52%"></span>
+          </span>
+          <span class="slip" style="color:#f06a76">+94 min</span>
+        </div>
+
+        <div class="line" data-run="000418-GLA">
+          <span class="id">000418-GLA</span>
+          <span class="track is-late" role="img"
+                aria-label="Glasgow to Carlisle: 41 minutes behind its window">
+            <span class="plan" style="left:14%;right:16%"></span>
+            <span class="run" style="left:14%;right:41%"></span>
+            <span class="now" style="left:59%"></span>
+          </span>
+          <span class="slip" style="color:#f58a4b">+41 min</span>
+        </div>
+
+        <div class="line" data-run="000427-PTH">
+          <span class="id">000427-PTH</span>
+          <span class="track is-late" role="img"
+                aria-label="Perth to Stirling: 22 minutes behind its window">
+            <span class="plan" style="left:22%;right:10%"></span>
+            <span class="run" style="left:22%;right:34%"></span>
+            <span class="now" style="left:66%"></span>
+          </span>
+          <span class="slip" style="color:#f58a4b">+22 min</span>
+        </div>
+
+        <div class="line" data-run="000419-EDI">
+          <span class="id">000419-EDI</span>
+          <span class="track" role="img"
+                aria-label="Edinburgh to Newcastle: on the sheet, 8 minutes of slack">
+            <span class="plan" style="left:30%;right:6%"></span>
+            <span class="run" style="left:30%;right:38%"></span>
+            <span class="now" style="left:62%"></span>
+          </span>
+          <span class="slip" style="color:#6fc99a">−8 min</span>
+        </div>
+
+        <div class="scale"><span>06:00</span><span>11:34 now</span><span>20:00</span></div>
+      </div>
+    </section>
+
+    <section class="runs rise rise-3" id="runs">
+      <header>
+        <h2>Runs today</h2>
+        <span class="said" id="said">5 of 82 shown</span>
+        <div class="filters" role="group" aria-label="Filter the runs">
+          <button type="button" data-filter="all" aria-pressed="true">All</button>
+          <button type="button" data-filter="late" aria-pressed="false">Slipping</button>
+          <button type="button" data-filter="wait" aria-pressed="false">Unassigned</button>
+        </div>
+      </header>
+
+      <div class="panel" id="panel">
+        <table>
+          <caption>Glasgow depot · read at 11:34 · times are local</caption>
+          <thead>
+            <tr>
+              <th scope="col">Run</th><th scope="col">Route</th>
+              <th scope="col">Operator</th><th scope="col">Standing</th>
+              <th scope="col" class="num">Due</th><th scope="col" class="num">Slip</th>
+              <th scope="col"><span class="said-live">Actions</span>&nbsp;</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr data-state="stop" data-late="yes" data-run="000420-ABD">
+              <td data-label="Run" class="runid">000420-ABD</td>
+              <td data-label="Route" class="route">Aberdeen to Dundee</td>
+              <td data-label="Operator">S. Mbeki</td>
+              <td data-label="Standing"><span class="chip stop"><span class="m"></span>Stopped 11:02</span></td>
+              <td data-label="Due" class="num">13:00</td>
+              <td data-label="Slip" class="num">+94 min</td>
+              <td data-label=""><button class="act" type="button"
+                  aria-label="Reassign run 000420-ABD, Aberdeen to Dundee">Reassign</button></td>
+            </tr>
+            <tr data-state="late" data-late="yes" data-run="000418-GLA">
+              <td data-label="Run" class="runid">000418-GLA</td>
+              <td data-label="Route" class="route">Glasgow to Carlisle</td>
+              <td data-label="Operator">A. Okonkwo</td>
+              <td data-label="Standing"><span class="chip late"><span class="m"></span>Behind</span></td>
+              <td data-label="Due" class="num">14:20</td>
+              <td data-label="Slip" class="num">+41 min</td>
+              <td data-label=""><button class="act" type="button"
+                  aria-label="Reassign run 000418-GLA, Glasgow to Carlisle">Reassign</button></td>
+            </tr>
+            <tr data-state="late" data-late="yes" data-run="000427-PTH">
+              <td data-label="Run" class="runid">000427-PTH</td>
+              <td data-label="Route" class="route">Perth to Stirling</td>
+              <td data-label="Operator">M. Varga</td>
+              <td data-label="Standing"><span class="chip late"><span class="m"></span>Behind</span></td>
+              <td data-label="Due" class="num">15:40</td>
+              <td data-label="Slip" class="num">+22 min</td>
+              <td data-label=""><button class="act" type="button"
+                  aria-label="Reassign run 000427-PTH, Perth to Stirling">Reassign</button></td>
+            </tr>
+            <tr data-state="good" data-run="000419-EDI">
+              <td data-label="Run" class="runid">000419-EDI</td>
+              <td data-label="Route" class="route">Edinburgh to Newcastle</td>
+              <td data-label="Operator">J. Fitzpatrick</td>
+              <td data-label="Standing"><span class="chip good"><span class="m"></span>On the sheet</span></td>
+              <td data-label="Due" class="num">15:05</td>
+              <td data-label="Slip" class="num">−8 min</td>
+              <td data-label=""><button class="act" type="button"
+                  aria-label="Open run 000419-EDI, Edinburgh to Newcastle">Open</button></td>
+            </tr>
+            <tr data-state="wait" data-run="000421-INV">
+              <td data-label="Run" class="runid">000421-INV</td>
+              <td data-label="Route" class="route">Inverness to Perth</td>
+              <td data-label="Operator">Not assigned</td>
+              <td data-label="Standing"><span class="chip wait"><span class="m"></span>Waiting</span></td>
+              <td data-label="Due" class="num">18:30</td>
+              <td data-label="Slip" class="num">—</td>
+              <td data-label=""><button class="act" type="button"
+                  aria-label="Assign run 000421-INV, Inverness to Perth">Assign</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="empty">
+          <h3>No run is waiting for an operator</h3>
+          <p>Every run today has someone on it. Clear the filter to see the
+             other 82, or watch the four slipping furthest above.</p>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+  (function () {
+    /* The count counts up once, on first paint. tabular-nums keeps the
+       figure from shifting while it runs. */
+    var big = document.getElementById("attention-heading");
+    var calm = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (big && !calm) {
+      var to = Number(big.dataset.to), started = null;
+      big.textContent = "0";
+      requestAnimationFrame(function step(now) {
+        if (started === null) started = now;
+        var t = Math.min(1, (now - started) / 900);
+        var eased = 1 - Math.pow(1 - t, 3);          /* ease-out cubic */
+        big.textContent = String(Math.round(to * eased));
+        if (t < 1) requestAnimationFrame(step);
+      });
+    }
+
+    /* A row and its route line are the same run. Pointing at either marks
+       both, so the figure above and the list below read as one thing.
+       Colour is not the only cue: the line also lifts onto its own surface. */
+    var lines = {};
+    document.querySelectorAll(".line[data-run]").forEach(function (line) {
+      lines[line.dataset.run] = line;
+    });
+    function link(run, on) {
+      var line = lines[run];
+      if (line) line.classList.toggle("is-linked", on);
+    }
+    document.querySelectorAll("tr[data-run]").forEach(function (row) {
+      var run = row.dataset.run;
+      row.addEventListener("mouseenter", function () { link(run, true); });
+      row.addEventListener("mouseleave", function () { link(run, false); });
+      row.addEventListener("focusin", function () { link(run, true); });
+      row.addEventListener("focusout", function () { link(run, false); });
+    });
+
+    var buttons = document.querySelectorAll(".filters button");
+    var rows = Array.prototype.slice.call(document.querySelectorAll("#rows tr"));
+    var panel = document.getElementById("panel");
+    var said = document.getElementById("said");
+
+    function apply(which) {
+      var shown = 0;
+      rows.forEach(function (row) {
+        var state = row.getAttribute("data-state");
+        var keep = which === "all" ||
+                   (which === "late" && (state === "late" || state === "stop")) ||
+                   (which === "wait" && state === "wait");
+        row.hidden = !keep;
+        if (keep) shown += 1;
+      });
+      // An empty result says which filter emptied it. It never shows as zeros.
+      panel.classList.toggle("is-empty", shown === 0);
+      said.textContent = shown === 0
+        ? "none of the 82 runs match this filter"
+        : shown + " of 82 shown";
+      buttons.forEach(function (button) {
+        button.setAttribute("aria-pressed", String(button.dataset.filter === which));
+      });
+    }
+
+    buttons.forEach(function (button) {
+      button.addEventListener("click", function () { apply(button.dataset.filter); });
+    });
+  })();
+</script>
+</body>
+</html>

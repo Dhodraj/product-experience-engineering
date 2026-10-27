@@ -1,0 +1,17 @@
+# graft's local graph cache — regenerable, not committed (run `graft build`).
+/graft/
+
+# Audit output: screenshots and measurements, regenerable.
+/.pxe-audit/
+/.playwright-mcp/
+
+# memsearch's local index.
+/.memsearch/
+
+# This machine's graft tooling. It is not part of the skill, and a clone that
+# carried it would fire hooks for a binary the cloner does not have.
+/.mcp.json
+/.ignore
+/.claude/settings.json
+/.claude/helpers/
+/.claude/skills/graft/
