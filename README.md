@@ -83,7 +83,15 @@ side by side.
 Same screen, same content, same markup structure. The right column is what
 `references/craft.md` changes.
 
-![The craft pass, at the size you would actually see it](docs/images/fig-3-craft.png)
+At page scale the first three of these are a few pixels each, so here is one
+panel corner at 5x:
+
+![The craft pass, at 5x on one corner](docs/images/fig-3-craft.png)
+
+The entrance cannot be shown in a still at all. Four frames of one page load,
+frozen at exact times:
+
+![The entrance, frozen at four moments](docs/images/fig-5-motion.png)
 
 | Before | After | Why |
 |---|---|---|
@@ -94,11 +102,12 @@ Same screen, same content, same markup structure. The right column is what
 | hover tints the row | hover also lifts that run's route line | The row and the line are the same run |
 | no `:active` | `scale(.96)` | Below `0.95` reads as a flinch |
 
-Hovering a run row marks its line in the band above. It also fires on
-`focusin`, and the link is carried by lift and weight, never by colour alone.
-Look at the third row from the top, and at the second line in the dark band:
+The last row of that table is the only one that is not polish. A run row and
+a route line are the same run, so pointing at either marks both:
 
-![A run row hovered, and its route line lifted in the band above](docs/images/console-row-link.png)
+![A row and its route line are the same run](docs/images/fig-6-link.png)
+
+`scale(.96)` on press has no honest still, so there is no picture of it here.
 
 The whole screen, for context:
 
